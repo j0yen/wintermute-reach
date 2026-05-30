@@ -10,20 +10,87 @@
     "target": 11
   },
   "acceptance_criteria": [
-    {"id": "AC1", "level": "MUST", "description": "wm-reach --help lists daemon, send, reply, test-transport subcommands.", "test": "tests/acceptance_ac1.rs"},
-    {"id": "AC2", "level": "MUST", "description": "Email transport with WM_REACH_SENDMAIL fake delivers body.", "test": "tests/acceptance_ac2.rs"},
-    {"id": "AC3", "level": "MUST", "description": "wm.family.message delivery produces wm.family.ack {delivered: true}.", "test": "tests/acceptance_ac3.rs"},
-    {"id": "AC4", "level": "MUST", "description": "wm.family.distress delivered before queued normal message.", "test": "tests/acceptance_ac4.rs"},
-    {"id": "AC5", "level": "MUST", "description": "Transport error yields wm.family.ack {delivered: false}.", "test": "tests/acceptance_ac5.rs"},
-    {"id": "AC6", "level": "MUST", "description": "wm-reach reply publishes wm.family.reply {from, body}.", "test": "tests/acceptance_ac6.rs"},
-    {"id": "AC7", "level": "MUST", "description": "ntfy/webhook behind Cargo features, excluded from default build.", "test": "tests/acceptance_ac7.rs"},
-    {"id": "AC8", "level": "MUST", "description": "Self-emitted topic filter prevents daemon re-consuming own acks.", "test": "tests/acceptance_ac8.rs"},
-    {"id": "AC9", "level": "MUST", "description": "systemd unit ExecStart matches install path (no .cargo/bin drift).", "test": "tests/acceptance_ac9.rs"},
-    {"id": "AC10", "level": "MUST", "description": "No secret in logs; config read from /etc/wintermute/conf.d/.", "test": "tests/acceptance_ac10.rs"},
-    {"id": "AC11", "level": "MUST", "description": "cargo test green; cargo clippy clean; release gate receipts produced.", "test": "tests/acceptance_ac11.rs"}
+    {
+      "id": "AC1",
+      "level": "MUST",
+      "description": "wm-reach --help lists daemon, send, reply, test-transport subcommands.",
+      "test": "tests/acceptance_ac1.rs"
+    },
+    {
+      "id": "AC2",
+      "level": "MUST",
+      "description": "Email transport with WM_REACH_SENDMAIL fake delivers body.",
+      "test": "tests/acceptance_ac2.rs"
+    },
+    {
+      "id": "AC3",
+      "level": "MUST",
+      "description": "wm.family.message delivery produces wm.family.ack {delivered: true}.",
+      "test": "tests/acceptance_ac3.rs"
+    },
+    {
+      "id": "AC4",
+      "level": "MUST",
+      "description": "wm.family.distress delivered before queued normal message.",
+      "test": "tests/acceptance_ac4.rs"
+    },
+    {
+      "id": "AC5",
+      "level": "MUST",
+      "description": "Transport error yields wm.family.ack {delivered: false}.",
+      "test": "tests/acceptance_ac5.rs"
+    },
+    {
+      "id": "AC6",
+      "level": "MUST",
+      "description": "wm-reach reply publishes wm.family.reply {from, body}.",
+      "test": "tests/acceptance_ac6.rs"
+    },
+    {
+      "id": "AC7",
+      "level": "MUST",
+      "description": "ntfy/webhook behind Cargo features, excluded from default build.",
+      "test": "tests/acceptance_ac7.rs"
+    },
+    {
+      "id": "AC8",
+      "level": "MUST",
+      "description": "Self-emitted topic filter prevents daemon re-consuming own acks.",
+      "test": "tests/acceptance_ac8.rs"
+    },
+    {
+      "id": "AC9",
+      "level": "MUST",
+      "description": "systemd unit ExecStart matches install path (no .cargo/bin drift).",
+      "test": "tests/acceptance_ac9.rs"
+    },
+    {
+      "id": "AC10",
+      "level": "MUST",
+      "description": "No secret in logs; config read from /etc/wintermute/conf.d/.",
+      "test": "tests/acceptance_ac10.rs"
+    },
+    {
+      "id": "AC11",
+      "level": "MUST",
+      "description": "cargo test green; cargo clippy clean; release gate receipts produced.",
+      "test": "tests/acceptance_ac11.rs"
+    }
   ],
-  "scope": ["Subscribe wm.family.message and wm.family.distress", "Deliver via email (default) or ntfy/webhook (features)", "Publish wm.family.ack after delivery", "Reply subcommand for v1 inbound stub", "Daemon, send, reply, test-transport CLI surface"],
-  "non_goals": ["Not a full SMTP server", "No inbound email polling in v1", "No SMS/push-without-ntfy", "No routing logic (that's the dialog FSM)", "No persistence beyond agorabus bus"],
+  "scope": [
+    "Subscribe wm.family.message and wm.family.distress",
+    "Deliver via email (default) or ntfy/webhook (features)",
+    "Publish wm.family.ack after delivery",
+    "Reply subcommand for v1 inbound stub",
+    "Daemon, send, reply, test-transport CLI surface"
+  ],
+  "non_goals": [
+    "Not a full SMTP server",
+    "No inbound email polling in v1",
+    "No SMS/push-without-ntfy",
+    "No routing logic (that's the dialog FSM)",
+    "No persistence beyond agorabus bus"
+  ],
   "hard_constraints": {
     "rust_edition": "2024",
     "target_kind": "cli",
@@ -36,10 +103,26 @@
     }
   },
   "five_whys_trace": [
-    {"why": 1, "q": "Why does wintermute need an off-device transport daemon?", "a": "No daemon today can cross the local/off-device boundary; family messages time out into 'I couldn't reach Joe.'"},
-    {"why": 2, "q": "Why does the dialog time out without this?", "a": "PRD-wintermute-family-intents enters FamilyPending and waits for wm.family.ack; without this daemon the ack never arrives."},
-    {"why": 3, "q": "Why not have the dialog FSM publish to an external API directly?", "a": "The transport choice should be swappable without touching the dialog FSM; isolation to one daemon is the right abstraction."},
-    {"why": 4, "q": "Why does distress need a privileged bypass path?", "a": "wm.family.distress is published on its own topic so a delivery daemon can treat it as bypass-batching, highest-priority."}
+    {
+      "why": 1,
+      "q": "Why does wintermute need an off-device transport daemon?",
+      "a": "No daemon today can cross the local/off-device boundary; family messages time out into 'I couldn't reach Joe.'"
+    },
+    {
+      "why": 2,
+      "q": "Why does the dialog time out without this?",
+      "a": "PRD-wintermute-family-intents enters FamilyPending and waits for wm.family.ack; without this daemon the ack never arrives."
+    },
+    {
+      "why": 3,
+      "q": "Why not have the dialog FSM publish to an external API directly?",
+      "a": "The transport choice should be swappable without touching the dialog FSM; isolation to one daemon is the right abstraction."
+    },
+    {
+      "why": 4,
+      "q": "Why does distress need a privileged bypass path?",
+      "a": "wm.family.distress is published on its own topic so a delivery daemon can treat it as bypass-batching, highest-priority."
+    }
   ],
   "created_at": "2026-05-29T00:00:00Z",
   "intent_slug": "wintermute-reach"

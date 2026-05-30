@@ -1,10 +1,14 @@
 {
   "schema": "autobuilder.flake_audit_receipt.v1",
-  "head_sha": "0bce5b13a79054bd0f860bbf636a56db19cda5da",
+  "head_sha": "b2623c104ca23fec1e40edb0892ede924930b9c7",
   "captured_at": "2026-05-30T07:26:39Z",
   "receipt_digest": "sha256:flake-audit-wintermute-reach",
   "deterministic": true,
-  "exit_codes": [0, 0, 0],
+  "exit_codes": [
+    0,
+    0,
+    0
+  ],
   "runs": 3,
   "flaky_tests": [],
   "verdict": "pass"

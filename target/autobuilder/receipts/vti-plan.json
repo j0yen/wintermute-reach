@@ -1,6 +1,6 @@
 {
   "schema": "autobuilder.vti_plan_receipt.v1",
-  "head_sha": "0bce5b13a79054bd0f860bbf636a56db19cda5da",
+  "head_sha": "b2623c104ca23fec1e40edb0892ede924930b9c7",
   "proof_lanes_path": "agent/proof-lanes.toml",
   "proof_lanes_sha256": "sha256:7e3ba76cc3a253ab846d495d4ee24b10c4dc9a33f05a84ffbc23b3f2ca8229e0",
   "base_ref": "HEAD~1",
@@ -9,9 +9,17 @@
   "min_confidence": 0.7,
   "receipt_digest": "sha256:vti-plan-wintermute-reach-iter1",
   "routes": [
-    {"path": ".gitignore", "lanes": ["meta"], "confidence": 1.0}
+    {
+      "path": ".gitignore",
+      "lanes": [
+        "meta"
+      ],
+      "confidence": 1.0
+    }
   ],
   "unrouted_paths": [],
-  "required_commands": ["cargo check --workspace"],
+  "required_commands": [
+    "cargo check --workspace"
+  ],
   "verdict": "pass"
 }

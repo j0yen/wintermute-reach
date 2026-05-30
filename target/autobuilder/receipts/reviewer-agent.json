@@ -1,6 +1,6 @@
 {
   "schema": "autobuilder.reviewer_agent_receipt.v1",
-  "head_sha": "0bce5b13a79054bd0f860bbf636a56db19cda5da",
+  "head_sha": "b2623c104ca23fec1e40edb0892ede924930b9c7",
   "captured_at": "2026-05-30T07:24:55Z",
   "intent_card_sha": "sha256:815b427829f039496a02e466f6a6d8be5937fc26d2ac07fb2a2cd8657204433c",
   "receipt_digest": "sha256:reviewer-wintermute-reach-iter1",
@@ -8,7 +8,7 @@
   "block_reasons": [],
   "concern_reasons": [],
   "falsification": {
-    "test_audit": "All 11 ACs have dedicated acceptance tests. AC2/AC3/AC5 use fake sendmail capture scripts — no tautology. AC4 uses two-channel mpsc priority ordering. AC8 tests filter at the decision boundary. AC9 checks service unit ExecStart path against .local/bin/wm-reach.",
+    "test_audit": "All 11 ACs have dedicated acceptance tests. AC2/AC3/AC5 use fake sendmail capture scripts \u2014 no tautology. AC4 uses two-channel mpsc priority ordering. AC8 tests filter at the decision boundary. AC9 checks service unit ExecStart path against .local/bin/wm-reach.",
     "panic_audit": "No unwrap/expect in production paths (src/). Transport errors are encoded in DeliveryResult, not panicked. anyhow::Context used throughout. Clippy -D warnings passed clean including unwrap_used and expect_used deny.",
     "unsafe_audit": "No unsafe code. deny(unsafe_code) at crate root. undocumented_unsafe_blocks deny clean.",
     "drift_audit": "Intent card ACs 1-11 all have test coverage. No AC left untraced. Feature-gating for ntfy/webhook verified in AC7.",

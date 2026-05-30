@@ -1,6 +1,6 @@
 {
   "schema": "autobuilder.bad_rust_audit.v1",
-  "head_sha": "0bce5b13a79054bd0f860bbf636a56db19cda5da",
+  "head_sha": "b2623c104ca23fec1e40edb0892ede924930b9c7",
   "findings": [
     {
       "rule_id": "HLT-016-SUPPLY-CHAIN-DRIFT",
