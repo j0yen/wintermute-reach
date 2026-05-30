@@ -1,4 +1,7 @@
 /target
+!/target/autobuilder/receipts/
+!/target/autobuilder/results.tsv
+!/target/autobuilder/postmortem.md
 **/*.rs.bk
 Cargo.lock.bk
 .DS_Store
