@@ -1,0 +1,16 @@
+[Unit]
+Description=wintermute-reach — off-device transport boundary for family-intents
+After=network.target agorabus.service
+Wants=agorabus.service
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/wm-reach daemon
+Restart=on-failure
+RestartSec=5s
+Environment=RUST_LOG=info
+# Conf dir defaults to /etc/wintermute/conf.d; override here if needed.
+# Environment=WM_REACH_CONF_DIR=/etc/wintermute/conf.d
+
+[Install]
+WantedBy=default.target

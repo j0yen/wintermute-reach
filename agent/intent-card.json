@@ -1,0 +1,150 @@
+{
+  "schema": "autobuilder.intent_card.v1",
+  "prd_source": "/home/jsy/wintermute/autobuilder/PRD-wintermute-reach.md",
+  "intent_slug": "wintermute-reach",
+  "root_motivation": "Provide the single off-device transport boundary that closes the wm.family.ack loop for family-intents dialogs. Without this daemon every family message times out into 'I couldn't reach Joe.' Distress events bypass normal queueing via a privileged dispatch path; the transport backend (email/ntfy/webhook) is swappable via config without touching the dialog FSM.",
+  "user_persona": "jsy running wintermute on a headless Arch Linux laptop; wintermute-reach runs as a systemd user service and is never invoked interactively except for test-transport and reply subcommands.",
+  "unfakeable_metric": {
+    "name": "acceptance_tests_passing_count",
+    "lower_is_better": false,
+    "harness_command": "scripts/run-metrics.sh",
+    "target": 11
+  },
+  "acceptance_criteria": [
+    {
+      "id": "AC1",
+      "level": "MUST",
+      "description": "wm-reach --help lists daemon, send, reply, test-transport subcommands.",
+      "test": "tests/acceptance_ac1.rs: assert --help output contains all four subcommand names"
+    },
+    {
+      "id": "AC2",
+      "level": "MUST",
+      "description": "The Transport trait has an email impl that, with WM_REACH_SENDMAIL pointed at a capture script, produces a message containing the family body.",
+      "test": "tests/acceptance_ac2.rs: integration test with fake sendmail capture script"
+    },
+    {
+      "id": "AC3",
+      "level": "MUST",
+      "description": "A published wm.family.message { to: 'joe', body: 'heating broken' } results in one transport delivery and one wm.family.ack { delivered: true, transport: 'email' } on the bus.",
+      "test": "tests/acceptance_ac3.rs: bus integration test using in-process mock bus"
+    },
+    {
+      "id": "AC4",
+      "level": "MUST",
+      "description": "A wm.family.distress event is delivered ahead of a wm.family.message that was queued first.",
+      "test": "tests/acceptance_ac4.rs: ordering/priority test verifying distress bypasses normal queue"
+    },
+    {
+      "id": "AC5",
+      "level": "MUST",
+      "description": "A transport error yields wm.family.ack { delivered: false } — not a panic, not a silent drop.",
+      "test": "tests/acceptance_ac5.rs: inject transport error, assert ack payload has delivered=false"
+    },
+    {
+      "id": "AC6",
+      "level": "MUST",
+      "description": "wm-reach reply 'Joe says hi' publishes a wm.family.reply { from, body } that a bus subscriber receives.",
+      "test": "tests/acceptance_ac6.rs: round-trip test via in-process mock bus"
+    },
+    {
+      "id": "AC7",
+      "level": "MUST",
+      "description": "ntfy and webhook backends compile behind their Cargo features and are excluded from the default build.",
+      "test": "tests/acceptance_ac7.rs: cargo build without features succeeds; cargo build --features ntfy,webhook also succeeds; grep src/ for #[cfg(feature)] guards"
+    },
+    {
+      "id": "AC8",
+      "level": "MUST",
+      "description": "The daemon applies the self-emitted-topic filter — does not re-consume its own wm.family.ack or wm.family.reply publishes.",
+      "test": "tests/acceptance_ac8.rs: assert self-emitted topic filter logic with mock bus"
+    },
+    {
+      "id": "AC9",
+      "level": "MUST",
+      "description": "systemd unit wm-reach.service installs pointing at the same bin path the install step uses (no cargo-bin-vs-local-bin drift).",
+      "test": "tests/acceptance_ac9.rs: parse wm-reach.service ExecStart and assert it matches install_prefix/wm-reach"
+    },
+    {
+      "id": "AC10",
+      "level": "MUST",
+      "description": "No secret (SMTP password, ntfy token) is logged; config is read from /etc/wintermute/conf.d/, never hard-coded.",
+      "test": "tests/acceptance_ac10.rs: grep-clean test: no literal credential patterns in src/; config loader reads from file path env var"
+    },
+    {
+      "id": "AC11",
+      "level": "MUST",
+      "description": "cargo test green; cargo clippy clean; release gate receipts produced per autobuilder.",
+      "test": "tests/acceptance_ac11.rs: meta-test asserting prior AC pass counts and that clippy exits 0"
+    }
+  ],
+  "scope": [
+    "Subscribe to wm.family.message and wm.family.distress on the agorabus",
+    "Deliver messages via email (default, always compiled), ntfy (feature), webhook (feature)",
+    "Publish wm.family.ack after each delivery attempt (delivered: true/false)",
+    "Publish wm.family.reply when wm-reach reply subcommand is invoked (v1 inbound stub)",
+    "Self-emitted-topic filter to avoid re-consuming own publishes",
+    "Distress bypass-batching: distress events delivered synchronously ahead of normal queue",
+    "Config loaded from /etc/wintermute/conf.d/ — no hardcoded credentials",
+    "systemd wm-reach.service unit file",
+    "CLI: daemon, send, reply, test-transport subcommands"
+  ],
+  "non_goals": [
+    "v2 inbound reply polling (email folder polling, webhook receipt) — deferred to v2",
+    "SMS, push notifications outside ntfy, or any transport requiring phone registration",
+    "Multi-recipient delivery — v1 delivers to the single configured jsy contact only",
+    "Message persistence / retry store — if delivery fails, ack { delivered: false } and move on",
+    "Any web server or listen socket (this is a pure client-to-external-service daemon)",
+    "Encryption or signing of messages in transit beyond what the transport provides",
+    "Rate limiting or batching of normal messages (v1 delivers promptly regardless of urgency field)"
+  ],
+  "hard_constraints": {
+    "rust_edition": "2024",
+    "target_kind": "cli",
+    "deny_unsafe": true,
+    "max_deps": 15,
+    "msrv": "1.88",
+    "additional": {
+      "no_network_in_tests": "All tests use fake sendmail scripts or in-process mock transports; no real SMTP or ntfy connections in cargo test",
+      "no_secret_in_logs": "Transport credentials must never appear in any log line, panic, or Debug output",
+      "agorabus_version": "0.8.0 (path dep from ~/wintermute/agorabus)"
+    }
+  },
+  "five_whys_trace": [
+    {
+      "why": 1,
+      "q": "Why does wintermute need an off-device transport daemon?",
+      "a": "No daemon today can cross the local/off-device boundary; family messages time out into 'I couldn't reach Joe.'"
+    },
+    {
+      "why": 2,
+      "q": "Why does the dialog time out without this?",
+      "a": "PRD-wintermute-family-intents enters FamilyPending and waits for wm.family.ack; without this daemon the ack never arrives."
+    },
+    {
+      "why": 3,
+      "q": "Why not have the dialog FSM publish to an external API directly?",
+      "a": "The transport choice (email/ntfy/webhook) should be swappable without touching the dialog FSM; isolation to one daemon is the right abstraction."
+    },
+    {
+      "why": 4,
+      "q": "Why does distress need a privileged bypass path?",
+      "a": "wm.family.distress is published on its own topic precisely so a delivery daemon can treat it as bypass-batching, highest-priority. The companion PRD established this contract; reach must honor it."
+    }
+  ],
+  "ambiguities_resolved": [
+    {
+      "question": "Should the agorabus dependency be a path dep from ~/wintermute/agorabus or a crates.io version?",
+      "resolution": "Path dep — agorabus is not published to crates.io; use path = '~/wintermute/agorabus' (absolute path in Cargo.toml)."
+    },
+    {
+      "question": "What session_id should the daemon use for its agorabus announce?",
+      "resolution": "wm-reach-daemon combined with the process pid, formatted as 'wm-reach-<pid>'."
+    },
+    {
+      "question": "How does the self-emitted-topic filter work?",
+      "resolution": "Track own session_id; in the event loop, skip any ServerEvent whose 'from' field matches own session_id."
+    }
+  ],
+  "created_at": "2026-05-29T00:00:00Z"
+}
