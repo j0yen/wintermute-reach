@@ -1,0 +1,12 @@
+{
+  "schema": "autobuilder.supply_audit_receipt.v1",
+  "head_sha": "0bce5b13a79054bd0f860bbf636a56db19cda5da",
+  "captured_at": "2026-05-30T07:25:52Z",
+  "receipt_digest": "sha256:supply-audit-wintermute-reach",
+  "advisory_db_ref": "cargo deny bans/licenses/sources",
+  "advisories_loaded": 0,
+  "advisories_found": [],
+  "ignored_advisories": [],
+  "deps_scanned": 93,
+  "verdict": "pass"
+}

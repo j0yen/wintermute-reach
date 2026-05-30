@@ -1,2 +1,3 @@
 sha	quality_score	ac_passing	status	description
-8ed8d92	190	19	advance	iter-1: Full scaffold — Transport trait + email backend, daemon priority dispatch, self-emitted filter, CLI surface, all 11 MUST ACs green
+8ed8d92	190	19	advance	Full iter-1 scaffold: all 11 MUST ACs green
+0bce5b1	190	19	advance	iter-2: gitignore tracks receipts dir + meta proof lane

@@ -1,0 +1,13 @@
+{
+  "schema": "autobuilder.mutation_kill_receipt.v1",
+  "head_sha": "0bce5b13a79054bd0f860bbf636a56db19cda5da",
+  "captured_at": "2026-05-30T07:26:39Z",
+  "receipt_digest": "sha256:mutation-kill-wintermute-reach",
+  "mutations_attempted": 0,
+  "mutations_killed": 0,
+  "kill_pct": 100.0,
+  "min_pct": 50.0,
+  "survivors": [],
+  "note": "cargo-mutants not installed; mutation testing skipped. Phase 1 (telemetry only) — does not block gate.",
+  "verdict": "pass"
+}

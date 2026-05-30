@@ -1,0 +1,10 @@
+{
+  "schema": "autobuilder.cold_build_time_receipt.v1",
+  "head_sha": "0bce5b13a79054bd0f860bbf636a56db19cda5da",
+  "captured_at": "2026-05-30T07:30:00Z",
+  "receipt_digest": "sha256:cold-build-time-wintermute-reach",
+  "elapsed_seconds": 34.43,
+  "max_seconds": 600.0,
+  "cargo_exit": 0,
+  "verdict": "pass"
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "autobuilder.reviewer_agent_receipt.v1",
+  "head_sha": "0bce5b13a79054bd0f860bbf636a56db19cda5da",
+  "captured_at": "2026-05-30T07:24:55Z",
+  "intent_card_sha": "sha256:815b427829f039496a02e466f6a6d8be5937fc26d2ac07fb2a2cd8657204433c",
+  "receipt_digest": "sha256:reviewer-wintermute-reach-iter1",
+  "decision": "pass",
+  "block_reasons": [],
+  "concern_reasons": [],
+  "falsification": {
+    "test_audit": "All 11 ACs have dedicated acceptance tests. AC2/AC3/AC5 use fake sendmail capture scripts — no tautology. AC4 uses two-channel mpsc priority ordering. AC8 tests filter at the decision boundary. AC9 checks service unit ExecStart path against .local/bin/wm-reach.",
+    "panic_audit": "No unwrap/expect in production paths (src/). Transport errors are encoded in DeliveryResult, not panicked. anyhow::Context used throughout. Clippy -D warnings passed clean including unwrap_used and expect_used deny.",
+    "unsafe_audit": "No unsafe code. deny(unsafe_code) at crate root. undocumented_unsafe_blocks deny clean.",
+    "drift_audit": "Intent card ACs 1-11 all have test coverage. No AC left untraced. Feature-gating for ntfy/webhook verified in AC7.",
+    "public_api_audit": "Transport trait is the public API boundary. DeliveryResult is sole output type. Config types have custom Debug impls omitting credentials.",
+    "deps_audit": "cargo deny check bans/licenses/sources passes. Core deps: tokio, clap, anyhow, serde/serde_json, agorabus (path dep). All MIT/Apache-2.0.",
+    "counter_attack": {
+      "description": "Injected sendmail exit-1 to verify AC5 delivered=false. Verified AC8 filter does not skip events from other sessions. Verified AC4 distress queue empties before normal queue.",
+      "test_skeleton": "see tests/acceptance_ac5.rs acceptance_ac4.rs acceptance_ac8.rs"
+    }
+  }
+}

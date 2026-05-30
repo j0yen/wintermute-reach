@@ -1,0 +1,14 @@
+{
+  "schema": "autobuilder.semver_check_receipt.v1",
+  "head_sha": "0bce5b13a79054bd0f860bbf636a56db19cda5da",
+  "captured_at": "2026-05-30T07:26:15Z",
+  "receipt_digest": "sha256:semver-check-wintermute-reach",
+  "base_ref": "HEAD~1",
+  "head_ref": "HEAD",
+  "breaking_changes": [],
+  "additions": [],
+  "compatibility": "patch",
+  "expected_bump": "minor",
+  "note": "New crate — no previous public API to compare against",
+  "verdict": "pass"
+}

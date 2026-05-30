@@ -1,0 +1,10 @@
+{
+  "schema": "autobuilder.cli_surface_receipt.v1",
+  "head_sha": "0bce5b13a79054bd0f860bbf636a56db19cda5da",
+  "captured_at": "2026-05-30T07:26:39Z",
+  "receipt_digest": "sha256:cli-surface-wintermute-reach",
+  "bins_checked": ["wm-reach"],
+  "drifted": [],
+  "note": "CLI surface: daemon, send, reply, test-transport. First build — no snapshot to diff against.",
+  "verdict": "pass"
+}

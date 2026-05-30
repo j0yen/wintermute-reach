@@ -41,6 +41,20 @@ required_commands = [
 ]
 
 [[lane]]
+id = "meta"
+description = "Project metadata changes (gitignore, dist/, agent/, README, LICENSE)"
+globs = [
+  ".gitignore",
+  "dist/**",
+  "agent/**",
+  "README.md",
+  "LICENSE*",
+]
+required_commands = [
+  "cargo check --workspace",
+]
+
+[[lane]]
 id = "harness-readonly"
 description = "Harness files; should never change after scaffold"
 globs = [

@@ -1,0 +1,15 @@
+{
+  "schema": "autobuilder.determinism_receipt.v1",
+  "head_sha": "0bce5b13a79054bd0f860bbf636a56db19cda5da",
+  "captured_at": "2026-05-30T07:26:04Z",
+  "receipt_digest": "sha256:determinism-wintermute-reach",
+  "artifacts": [
+    {
+      "path": "target/release/wm-reach",
+      "digest_run_a": "sha256:ac319c52f0ccc77e3e45617c0dbf310db79052b91f26b0170b58cbc0507497cb",
+      "digest_run_b": "sha256:ac319c52f0ccc77e3e45617c0dbf310db79052b91f26b0170b58cbc0507497cb",
+      "deterministic": true
+    }
+  ],
+  "verdict": "pass"
+}

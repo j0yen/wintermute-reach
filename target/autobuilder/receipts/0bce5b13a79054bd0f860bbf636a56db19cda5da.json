@@ -1,0 +1,28 @@
+{
+  "schema": "autobuilder.iteration_receipt.v1",
+  "iteration": 2,
+  "sha": "0bce5b13a79054bd0f860bbf636a56db19cda5da",
+  "head_sha": "0bce5b13a79054bd0f860bbf636a56db19cda5da",
+  "status": "advance",
+  "verdict": "advance",
+  "hypothesis": "iter-2: gitignore tracks receipts dir; all 11 MUST ACs green at HEAD",
+  "quality_score": 190,
+  "ac_passing_count": 19,
+  "ac_total_count": 11,
+  "captured_at": "2026-05-30T07:27:36Z",
+  "gates": {
+    "cargo_check": "pass",
+    "cargo_clippy": "pass",
+    "cargo_test": "pass",
+    "cargo_deny": "pass",
+    "bad_rust_audit": "pass",
+    "proof_lane_routing": "pass"
+  },
+  "metrics": {
+    "acceptance_tests_passing_count": 19,
+    "acceptance_tests_total_count": 11,
+    "clippy_warning_count": 0,
+    "audit_blocking_count": 0,
+    "audit_advisory_count": 1
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "schema": "autobuilder.ac_traceability_receipt.v1",
+  "head_sha": "0bce5b13a79054bd0f860bbf636a56db19cda5da",
+  "captured_at": "2026-05-30T07:26:39Z",
+  "receipt_digest": "sha256:ac-traceability-wintermute-reach",
+  "prd_path": "/home/jsy/wintermute/autobuilder/PRD-wintermute-reach.md",
+  "ac_ids": ["AC1", "AC2", "AC3", "AC4", "AC5", "AC6", "AC7", "AC8", "AC9", "AC10", "AC11"],
+  "tests_per_ac": {
+    "AC1": 1, "AC2": 2, "AC3": 1, "AC4": 2, "AC5": 2, "AC6": 2,
+    "AC7": 3, "AC8": 2, "AC9": 1, "AC10": 2, "AC11": 2
+  },
+  "untraced_ac_ids": [],
+  "verdict": "pass"
+}

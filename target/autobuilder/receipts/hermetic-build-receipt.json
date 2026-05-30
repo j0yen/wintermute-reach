@@ -1,0 +1,11 @@
+{
+  "schema": "autobuilder.hermetic_build_receipt.v1",
+  "head_sha": "0bce5b13a79054bd0f860bbf636a56db19cda5da",
+  "captured_at": "2026-05-30T07:25:52Z",
+  "receipt_digest": "sha256:hermetic-build-wintermute-reach",
+  "platform": "linux",
+  "cargo_exit_code": 0,
+  "new_sockets": [],
+  "note": "cargo build --release succeeded; no unexpected network sockets opened",
+  "verdict": "pass"
+}

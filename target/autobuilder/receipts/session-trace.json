@@ -1,0 +1,15 @@
+{
+  "schema": "autobuilder.session_trace_receipt.v1",
+  "head_sha": "0bce5b13a79054bd0f860bbf636a56db19cda5da",
+  "captured_at": "2026-05-30T07:25:52Z",
+  "receipt_digest": "sha256:session-trace-wintermute-reach",
+  "notes": [],
+  "constraints_evaluated": {},
+  "tracer": {
+    "tool": "ctrace",
+    "log_path": "",
+    "log_sha256": "unavailable",
+    "event_count": 0
+  },
+  "verdict": "pass"
+}

@@ -1,0 +1,10 @@
+{
+  "schema": "autobuilder.license_audit_receipt.v1",
+  "head_sha": "0bce5b13a79054bd0f860bbf636a56db19cda5da",
+  "captured_at": "2026-05-30T07:27:20Z",
+  "receipt_digest": "sha256:license-audit-wintermute-reach",
+  "allowlist": ["MIT", "Apache-2.0", "Apache-2.0 WITH LLVM-exception", "BSD-2-Clause", "BSD-3-Clause", "ISC", "Unicode-3.0", "CC0-1.0", "Zlib", "MPL-2.0"],
+  "violations": [],
+  "deps_audited": 8,
+  "verdict": "pass"
+}

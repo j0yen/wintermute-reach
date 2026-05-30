@@ -1,0 +1,17 @@
+{
+  "schema": "autobuilder.bad_rust_audit.v1",
+  "head_sha": "0bce5b13a79054bd0f860bbf636a56db19cda5da",
+  "findings": [
+    {
+      "rule_id": "HLT-016-SUPPLY-CHAIN-DRIFT",
+      "detector": "cargo_deny_check",
+      "severity": "advisory",
+      "path": "deny.toml",
+      "line": 0,
+      "snippet": "",
+      "explanation": "cargo-deny advisories check skipped (bans/licenses/sources passes)"
+    }
+  ],
+  "blocking_count": 0,
+  "advisory_count": 1
+}

@@ -1,0 +1,15 @@
+{
+  "schema": "autobuilder.rollback_plan_receipt.v1",
+  "head_sha": "0bce5b13a79054bd0f860bbf636a56db19cda5da",
+  "captured_at": "2026-05-30T07:27:20Z",
+  "base_ref": "8ed8d925eea0ec1df260e039c6fee345962fb4fd",
+  "base_sha": "8ed8d925eea0ec1df260e039c6fee345962fb4fd",
+  "receipt_digest": "sha256:rollback-plan-wintermute-reach",
+  "blocking_count": 0,
+  "verdict": "pass",
+  "commit_count": 2,
+  "commits": [
+    {"sha": "0bce5b13a79054bd0f860bbf636a56db19cda5da", "short_sha": "0bce5b1", "subject": "gitignore: track target/autobuilder receipts", "parent_count": 1, "revertable": true, "note": "clean revert"},
+    {"sha": "d0c1094cb8652cbb496fac73aa7c2d78ba8af04b", "short_sha": "d0c1094", "subject": "abouts: README, dual MIT/Apache-2.0 license, iter-1 receipts", "parent_count": 1, "revertable": true, "note": "clean revert"}
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "prd": "/home/jsy/wintermute/autobuilder/PRD-wintermute-reach.md",
+  "schema": "spec-drift.v1",
+  "summary": {
+    "drift_count": 0,
+    "help_fail_count": 0,
+    "tools_checked": 9
+  },
+  "tools": [
+    {
+      "actual_verbs": [],
+      "asserted_verbs": [],
+      "binary": "daemon",
+      "found": false,
+      "missing_verbs": [],
+      "verdict": "unavailable"
+    },
+    {
+      "actual_verbs": [],
+      "asserted_verbs": [],
+      "binary": "email",
+      "found": false,
+      "missing_verbs": [],
+      "verdict": "unavailable"
+    },
+    {
+      "actual_verbs": [],
+      "asserted_verbs": [],
+      "binary": "ntfy",
+      "found": false,
+      "missing_verbs": [],
+      "verdict": "unavailable"
+    },
+    {
+      "actual_verbs": [],
+      "asserted_verbs": [],
+      "binary": "reply",
+      "found": false,
+      "missing_verbs": [],
+      "verdict": "unavailable"
+    },
+    {
+      "actual_verbs": [],
+      "asserted_verbs": [],
+      "binary": "send",
+      "found": false,
+      "missing_verbs": [],
+      "verdict": "unavailable"
+    },
+    {
+      "actual_verbs": [],
+      "asserted_verbs": [],
+      "binary": "sendmail",
+      "found": false,
+      "missing_verbs": [],
+      "verdict": "unavailable"
+    },
+    {
+      "actual_verbs": [],
+      "asserted_verbs": [],
+      "binary": "test-transport",
+      "found": false,
+      "missing_verbs": [],
+      "verdict": "unavailable"
+    },
+    {
+      "actual_verbs": [],
+      "asserted_verbs": [],
+      "binary": "webhook",
+      "found": false,
+      "missing_verbs": [],
+      "verdict": "unavailable"
+    },
+    {
+      "actual_verbs": [],
+      "asserted_verbs": [
+        "daemon",
+        "send",
+        "test-transport"
+      ],
+      "binary": "wm-reach",
+      "found": false,
+      "missing_verbs": [],
+      "verdict": "unavailable"
+    }
+  ]
+}

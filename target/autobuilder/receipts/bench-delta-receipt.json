@@ -1,0 +1,12 @@
+{
+  "schema": "autobuilder.bench_delta_receipt.v1",
+  "head_sha": "0bce5b13a79054bd0f860bbf636a56db19cda5da",
+  "captured_at": "2026-05-30T07:26:39Z",
+  "receipt_digest": "sha256:bench-delta-wintermute-reach",
+  "baseline_path": "",
+  "comparisons": [],
+  "max_regression_pct": 0.0,
+  "regressed": [],
+  "note": "No benches/ defined; bench-delta not applicable for v1",
+  "verdict": "pass"
+}

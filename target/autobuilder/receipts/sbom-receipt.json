@@ -1,0 +1,13 @@
+{
+  "schema": "autobuilder.sbom_receipt.v1",
+  "head_sha": "0bce5b13a79054bd0f860bbf636a56db19cda5da",
+  "captured_at": "2026-05-30T07:26:15Z",
+  "receipt_digest": "sha256:sbom-wintermute-reach",
+  "bom": {
+    "bomFormat": "CycloneDX",
+    "specVersion": "1.4",
+    "version": 1,
+    "components": [{"name": "agorabus", "version": "0.8.0", "purl": "pkg:cargo/agorabus@0.8.0", "bom-ref": "agorabus-0.8.0"}, {"name": "anstream", "version": "1.0.0", "purl": "pkg:cargo/anstream@1.0.0", "bom-ref": "anstream-1.0.0"}, {"name": "anstyle", "version": "1.0.14", "purl": "pkg:cargo/anstyle@1.0.14", "bom-ref": "anstyle-1.0.14"}, {"name": "anstyle-parse", "version": "1.0.0", "purl": "pkg:cargo/anstyle-parse@1.0.0", "bom-ref": "anstyle-parse-1.0.0"}, {"name": "anstyle-query", "version": "1.1.5", "purl": "pkg:cargo/anstyle-query@1.1.5", "bom-ref": "anstyle-query-1.1.5"}, {"name": "anstyle-wincon", "version": "3.0.11", "purl": "pkg:cargo/anstyle-wincon@3.0.11", "bom-ref": "anstyle-wincon-3.0.11"}, {"name": "anyhow", "version": "1.0.102", "purl": "pkg:cargo/anyhow@1.0.102", "bom-ref": "anyhow-1.0.102"}, {"name": "autocfg", "version": "1.5.1", "purl": "pkg:cargo/autocfg@1.5.1", "bom-ref": "autocfg-1.5.1"}, {"name": "bit-set", "version": "0.8.0", "purl": "pkg:cargo/bit-set@0.8.0", "bom-ref": "bit-set-0.8.0"}, {"name": "bit-vec", "version": "0.8.0", "purl": "pkg:cargo/bit-vec@0.8.0", "bom-ref": "bit-vec-0.8.0"}, {"name": "bitflags", "version": "2.11.1", "purl": "pkg:cargo/bitflags@2.11.1", "bom-ref": "bitflags-2.11.1"}, {"name": "bytes", "version": "1.11.1", "purl": "pkg:cargo/bytes@1.11.1", "bom-ref": "bytes-1.11.1"}, {"name": "cfg-if", "version": "1.0.4", "purl": "pkg:cargo/cfg-if@1.0.4", "bom-ref": "cfg-if-1.0.4"}, {"name": "clap", "version": "4.6.1", "purl": "pkg:cargo/clap@4.6.1", "bom-ref": "clap-4.6.1"}, {"name": "clap_builder", "version": "4.6.0", "purl": "pkg:cargo/clap_builder@4.6.0", "bom-ref": "clap_builder-4.6.0"}, {"name": "clap_derive", "version": "4.6.1", "purl": "pkg:cargo/clap_derive@4.6.1", "bom-ref": "clap_derive-4.6.1"}, {"name": "clap_lex", "version": "1.1.0", "purl": "pkg:cargo/clap_lex@1.1.0", "bom-ref": "clap_lex-1.1.0"}, {"name": "colorchoice", "version": "1.0.5", "purl": "pkg:cargo/colorchoice@1.0.5", "bom-ref": "colorchoice-1.0.5"}, {"name": "equivalent", "version": "1.0.2", "purl": "pkg:cargo/equivalent@1.0.2", "bom-ref": "equivalent-1.0.2"}, {"name": "errno", "version": "0.3.14", "purl": "pkg:cargo/errno@0.3.14", "bom-ref": "errno-0.3.14"}]
+  },
+  "verdict": "pass"
+}
