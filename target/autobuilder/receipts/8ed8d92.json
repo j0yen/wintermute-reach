@@ -1,0 +1,26 @@
+{
+  "schema": "autobuilder.evidence_pack.v1",
+  "iteration": 1,
+  "sha": "8ed8d925eea0ec1df260e039c6fee345962fb4fd",
+  "status": "advance",
+  "hypothesis": "Full iter-1 scaffold: Transport trait + email backend, daemon priority dispatch, self-emitted filter, CLI surface, all 11 MUST ACs green",
+  "quality_score": 190,
+  "ac_passing_count": 19,
+  "ac_total_count": 11,
+  "gates": {
+    "cargo_check": "pass",
+    "cargo_clippy": "pass",
+    "cargo_test": "pass",
+    "cargo_deny": "pass",
+    "bad_rust_audit": "pass",
+    "proof_lane_routing": "pass"
+  },
+  "metrics": {
+    "acceptance_tests_passing_count": 19,
+    "acceptance_tests_total_count": 11,
+    "clippy_warning_count": 0,
+    "audit_blocking_count": 0,
+    "audit_advisory_count": 1
+  },
+  "captured_at": "2026-05-30T06:05:00Z"
+}
