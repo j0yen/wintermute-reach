@@ -87,6 +87,7 @@ fn acceptance_ac4b_distress_subject_has_distress_prefix() {
             smtp_host: None,
         }),
         from: "wintermute".to_string(),
+        digest: wintermute_reach::DigestConfig::default(),
     };
 
     let transport = build_transport(&cfg).expect("build transport");

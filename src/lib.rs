@@ -4,7 +4,8 @@
 
 pub mod config;
 pub mod daemon;
+pub mod digest;
 pub mod dispatch;
 pub mod transport;
 
-pub use config::Config;
+pub use config::{Config, DigestConfig};

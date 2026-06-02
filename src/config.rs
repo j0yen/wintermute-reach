@@ -8,6 +8,27 @@ use anyhow::{Context as _, Result};
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 
+/// Daily digest configuration.
+///
+/// Controls whether a daily presence summary is delivered, at what local
+/// hour, and for which contact name the summary is personalised.
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct DigestConfig {
+    /// Whether to deliver the daily digest at all (opt-in gate).
+    #[serde(default)]
+    pub enabled: bool,
+    /// Local hour (0–23) at which to deliver the digest (default: 20 = 8pm).
+    #[serde(default = "default_digest_hour")]
+    pub send_hour: u8,
+    /// Contact name used in the digest body (e.g. `"Mom"`).
+    #[serde(default)]
+    pub contact_name: Option<String>,
+}
+
+const fn default_digest_hour() -> u8 {
+    20
+}
+
 /// Top-level daemon configuration.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
@@ -16,6 +37,9 @@ pub struct Config {
     /// Contact name to use in the `from` field of `wm.family.reply`.
     #[serde(default = "default_from")]
     pub from: String,
+    /// Daily digest settings (opt-in; disabled by default).
+    #[serde(default)]
+    pub digest: DigestConfig,
 }
 
 fn default_from() -> String {
@@ -108,6 +132,7 @@ impl Config {
                 smtp_host: None,
             }),
             from: "wintermute".to_string(),
+            digest: DigestConfig::default(),
         })
     }
 
