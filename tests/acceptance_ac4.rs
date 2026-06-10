@@ -88,6 +88,7 @@ fn acceptance_ac4b_distress_subject_has_distress_prefix() {
         }),
         from: "wintermute".to_string(),
         digest: wintermute_reach::DigestConfig::default(),
+        ..Default::default()
     };
 
     let transport = build_transport(&cfg).expect("build transport");

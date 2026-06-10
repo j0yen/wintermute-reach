@@ -13,6 +13,7 @@ use serde_json::json;
 use std::path::Path;
 
 use crate::config::Config;
+use crate::distress_delivery::run_distress_ladder;
 use crate::transport::{DeliveryResult, build_transport};
 
 /// Publish a `wm.family.ack` payload onto the bus.
@@ -137,31 +138,44 @@ pub async fn handle_message(
     publish_ack(sock, &result, session_id).await
 }
 
-/// Deliver an inbound `wm.family.distress` event and publish the ack.
+/// Deliver an inbound `wm.family.distress` event via the retry/fallback ladder,
+/// then publish the ack.
 ///
-/// Distress is delivered synchronously before normal messages; the calling
-/// loop ensures ordering by invoking this *first* in its dispatch priority.
+/// Distress is checked first in the daemon select loop (biased).  This function
+/// runs the delivery ladder (primary retries + fallbacks) synchronously before
+/// awaiting the ack publish, so the ladder completes before the select loop can
+/// pick up a new event — keeping ordering guarantees while not blocking a *second*
+/// distress (the caller is in a `tokio::spawn` task per the daemon design).
 ///
 /// # Errors
 ///
-/// Returns `Err` on ack-publish failure.
+/// Returns `Err` on ack-publish failure; transport failures are encoded in the ack.
 pub async fn handle_distress(
     sock: &Path,
     cfg: &Config,
     body: &str,
     session_id: &str,
 ) -> Result<()> {
-    // Synchronous transport delivery before any await.
+    // Run the retry/fallback ladder synchronously before any await.
     let result = {
         let transport = build_transport(cfg)?;
-        transport
-            .deliver("[DISTRESS] wintermute family alert", body)
-            .unwrap_or_else(|e| DeliveryResult {
-                delivered: false,
-                transport: cfg.transport_kind().to_string(),
-                reference: None,
-                error: Some(format!("transport error: {e}")),
-            })
+        let primary_name = cfg.transport_kind();
+        // No feature-gated fallbacks in the default build; the ladder degrades
+        // gracefully to email-only-with-retry.
+        run_distress_ladder(
+            "[DISTRESS] wintermute family alert",
+            body,
+            transport.as_ref(),
+            primary_name,
+            &[], // fallbacks: empty in default build; extended by feature builds
+            &cfg.distress_policy,
+        )
+        .unwrap_or_else(|e| DeliveryResult {
+            delivered: false,
+            transport: primary_name.to_string(),
+            reference: None,
+            error: Some(format!("ladder error: {e}")),
+        })
     };
     publish_ack(sock, &result, session_id).await
 }

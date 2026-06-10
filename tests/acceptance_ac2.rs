@@ -36,6 +36,7 @@ fn acceptance_ac2_email_delivers_body_to_sendmail() {
         }),
         from: "wintermute".to_string(),
         digest: wintermute_reach::DigestConfig::default(),
+        ..Default::default()
     };
 
     let transport = build_transport(&cfg).expect("build transport");

@@ -17,6 +17,7 @@ fn acceptance_ac5_transport_error_yields_delivered_false() {
         }),
         from: "wintermute".to_string(),
         digest: wintermute_reach::DigestConfig::default(),
+        ..Default::default()
     };
 
     let transport = build_transport(&cfg).expect("build transport");
@@ -65,6 +66,7 @@ fn acceptance_ac5b_sendmail_exit_nonzero_yields_delivered_false() {
         }),
         from: "wintermute".to_string(),
         digest: wintermute_reach::DigestConfig::default(),
+        ..Default::default()
     };
 
     let transport = build_transport(&cfg).expect("build transport");

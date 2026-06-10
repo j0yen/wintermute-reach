@@ -40,6 +40,7 @@ fn digest_ac3_one_delivery_with_count_and_last_time() {
             send_hour: 20,
             contact_name: Some("Mom".to_string()),
         },
+        ..Default::default()
     };
 
     let mut tally = PresenceTally::default();
@@ -87,6 +88,7 @@ fn digest_ac3_exactly_one_delivery_per_call() {
             send_hour: 20,
             contact_name: Some("Mom".to_string()),
         },
+        ..Default::default()
     };
 
     let tally = PresenceTally {

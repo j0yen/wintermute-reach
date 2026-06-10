@@ -73,6 +73,7 @@ fn digest_ac9_family_transport_still_works_after_digest() {
         }),
         from: "wintermute".to_string(),
         digest: wintermute_reach::DigestConfig::default(),
+        ..Default::default()
     };
 
     let transport = build_transport(&cfg).expect("build existing transport");

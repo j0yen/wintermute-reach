@@ -14,7 +14,11 @@ use clap::{Parser, Subcommand};
 
 mod config;
 mod daemon;
+mod digest;
 mod dispatch;
+mod distress_delivery;
+mod inbound;
+mod silence_nudge;
 mod transport;
 
 pub use config::Config;

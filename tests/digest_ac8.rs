@@ -38,6 +38,7 @@ fn digest_ac8_disabled_yields_no_delivery() {
             send_hour: 20,
             contact_name: Some("Mom".to_string()),
         },
+        ..Default::default()
     };
 
     let mut tally = PresenceTally::default();

@@ -35,6 +35,7 @@ fn acceptance_ac3_family_message_delivery_produces_ack() {
         }),
         from: "wintermute".to_string(),
         digest: wintermute_reach::DigestConfig::default(),
+        ..Default::default()
     };
 
     // Simulate dispatch.handle_message logic inline.

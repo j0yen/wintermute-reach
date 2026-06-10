@@ -29,6 +29,121 @@ const fn default_digest_hour() -> u8 {
     20
 }
 
+/// Silence-nudge configuration.
+///
+/// A single, debounced, gentle delivery when a waking-hours silence window fires.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SilenceNudgeConfig {
+    /// Whether to deliver a silence nudge at all (opt-in gate; default `false`).
+    #[serde(default)]
+    pub enabled: bool,
+    /// Contact name used in the nudge body (e.g. `"Mom"`).
+    #[serde(default = "default_contact_name")]
+    pub contact_name: String,
+}
+
+fn default_contact_name() -> String {
+    "Mom".to_string()
+}
+
+impl Default for SilenceNudgeConfig {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            contact_name: default_contact_name(),
+        }
+    }
+}
+
+/// Inbound transport kind.
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum InboundTransportKind {
+    /// Scan a local maildir `new/` directory (default; no network required).
+    #[default]
+    Maildir,
+    /// IMAP poll (requires the `imap` Cargo feature).
+    #[cfg(feature = "imap")]
+    Imap,
+}
+
+/// Inbound channel configuration.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct InboundConfig {
+    /// Whether the inbound channel is active (opt-in gate; default `false`).
+    #[serde(default)]
+    pub enabled: bool,
+    /// Transport to use for inbound polling.
+    #[serde(default)]
+    pub transport: InboundTransportKind,
+    /// Maildir root path (used when `transport == Maildir`).
+    #[serde(default)]
+    pub mailbox: Option<String>,
+    /// Poll interval in seconds.
+    #[serde(default = "default_poll_secs")]
+    pub poll_secs: u64,
+    /// Allowlist of `From` email addresses.
+    #[serde(default)]
+    pub allow_from: Vec<String>,
+    /// Display name used in published replies (e.g. `"Joe"`).
+    #[serde(default = "default_display_name")]
+    pub display_name: String,
+}
+
+fn default_poll_secs() -> u64 {
+    60
+}
+
+fn default_display_name() -> String {
+    "Joe".to_string()
+}
+
+impl Default for InboundConfig {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            transport: InboundTransportKind::default(),
+            mailbox: None,
+            poll_secs: default_poll_secs(),
+            allow_from: Vec::new(),
+            display_name: default_display_name(),
+        }
+    }
+}
+
+/// Distress delivery policy — retry + fallback ladder for `wm.family.distress`.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DistressPolicy {
+    /// Maximum retry attempts on the primary transport (0 = no retry).
+    #[serde(default = "default_distress_retries")]
+    pub max_retries: u32,
+    /// Base backoff in milliseconds between retry attempts.
+    #[serde(default = "default_distress_backoff_ms")]
+    pub backoff_ms: u64,
+    /// Ordered list of fallback transport kinds to try after primary retries fail.
+    /// Each element is a transport kind name (e.g. `"ntfy"`, `"webhook"`).
+    #[serde(default)]
+    pub fallback_order: Vec<String>,
+}
+
+fn default_distress_retries() -> u32 {
+    3
+}
+
+fn default_distress_backoff_ms() -> u64 {
+    500
+}
+
+impl Default for DistressPolicy {
+    fn default() -> Self {
+        Self {
+            max_retries: default_distress_retries(),
+            backoff_ms: default_distress_backoff_ms(),
+            fallback_order: Vec::new(),
+        }
+    }
+}
+
 /// Top-level daemon configuration.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
@@ -40,6 +155,15 @@ pub struct Config {
     /// Daily digest settings (opt-in; disabled by default).
     #[serde(default)]
     pub digest: DigestConfig,
+    /// Silence nudge settings (opt-in; disabled by default).
+    #[serde(default)]
+    pub silence_nudge: SilenceNudgeConfig,
+    /// Inbound channel settings (opt-in; disabled by default).
+    #[serde(default)]
+    pub inbound: InboundConfig,
+    /// Distress delivery policy (retry + fallback ladder).
+    #[serde(default)]
+    pub distress_policy: DistressPolicy,
 }
 
 fn default_from() -> String {
@@ -95,6 +219,25 @@ pub struct WebhookConfig {
     pub url: String,
 }
 
+impl Default for Config {
+    /// Default config used as the base for `..Default::default()` in tests.
+    fn default() -> Self {
+        Self {
+            transport: TransportConfig::Email(EmailConfig {
+                to: String::new(),
+                from: String::new(),
+                sendmail: default_sendmail(),
+                smtp_host: None,
+            }),
+            from: default_from(),
+            digest: DigestConfig::default(),
+            silence_nudge: SilenceNudgeConfig::default(),
+            inbound: InboundConfig::default(),
+            distress_policy: DistressPolicy::default(),
+        }
+    }
+}
+
 impl Config {
     /// Load config from `conf_dir/reach.json` or `conf_dir/reach.toml`.
     ///
@@ -133,6 +276,9 @@ impl Config {
             }),
             from: "wintermute".to_string(),
             digest: DigestConfig::default(),
+            silence_nudge: SilenceNudgeConfig::default(),
+            inbound: InboundConfig::default(),
+            distress_policy: DistressPolicy::default(),
         })
     }
 
