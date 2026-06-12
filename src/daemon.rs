@@ -1,11 +1,13 @@
-//! Daemon mode: subscribe to `wm.family.*` and dispatch deliveries.
+//! Daemon mode: subscribe to `wm.family.*` and `wm.presence.*`, dispatch deliveries.
 //!
 //! ## Subscription strategy
 //!
-//! The daemon subscribes to `wm.family` (prefix match) which catches both
-//! `wm.family.message` and `wm.family.distress`. It uses a two-priority
-//! channel: distress events are placed in a high-priority queue and delivered
-//! synchronously before any pending normal messages.
+//! The daemon subscribes to:
+//! - `wm.family` (prefix match) — catches `wm.family.message` and `wm.family.distress`.
+//!   Uses a two-priority channel: distress events are placed in a high-priority queue
+//!   and delivered synchronously before any pending normal messages.
+//! - `wm.presence` (prefix match) — catches `wm.presence.silence` to trigger the
+//!   silence nudge (when `SilenceNudgeConfig::enabled = true`).
 //!
 //! ## Self-emitted-topic filter
 //!
@@ -28,23 +30,27 @@ use tokio::sync::mpsc;
 
 use crate::config::Config;
 use crate::dispatch;
+use crate::silence_nudge;
 
 /// Priority levels for inbound events.
 #[derive(Debug)]
 enum EventKind {
     Distress { body: String },
     Message { body: String },
+    /// A `wm.presence.silence` event — carry the window key for debounce.
+    PresenceSilence { window_key: String },
 }
 
 /// Run the daemon subscribe loop.
 ///
-/// Subscribes to `wm.family`, dispatches distress ahead of normal messages,
-/// and publishes `wm.family.ack` after each delivery.
+/// Subscribes to `wm.family` and `wm.presence`, dispatches distress ahead of
+/// normal messages, fires the silence nudge on `wm.presence.silence`, and
+/// publishes `wm.family.ack` after each family delivery.
 ///
 /// # Errors
 ///
 /// Returns `Err` on unrecoverable bus errors.
-pub async fn run(sock: &Path, cfg: &Config) -> Result<()> {
+pub async fn run(sock: &Path, cfg: &Config, state_dir: &Path) -> Result<()> {
     let pid = std::process::id();
     let session_id = format!("wm-reach-daemon-{pid}");
 
@@ -67,7 +73,7 @@ pub async fn run(sock: &Path, cfg: &Config) -> Result<()> {
         .await
     });
 
-    // Dispatch loop: drain distress first, then normal.
+    // Dispatch loop: drain distress first, then normal/presence.
     loop {
         tokio::select! {
             biased; // distress checked first
@@ -78,9 +84,33 @@ pub async fn run(sock: &Path, cfg: &Config) -> Result<()> {
                 }
             }
             ev = normal_rx.recv() => {
-                let Some(EventKind::Message { body }) = ev else { break; };
-                if let Err(e) = dispatch::handle_message(sock, cfg, &body, &session_id).await {
-                    eprintln!("{{\"level\":\"error\",\"action\":\"message_ack\",\"err\":\"{e}\"}}");
+                match ev {
+                    Some(EventKind::Message { body }) => {
+                        if let Err(e) = dispatch::handle_message(sock, cfg, &body, &session_id).await {
+                            eprintln!("{{\"level\":\"error\",\"action\":\"message_ack\",\"err\":\"{e}\"}}");
+                        }
+                    }
+                    Some(EventKind::PresenceSilence { window_key }) => {
+                        match silence_nudge::maybe_deliver_nudge(
+                            cfg,
+                            &cfg.silence_nudge,
+                            state_dir,
+                            &window_key,
+                        ) {
+                            Ok(true) => {
+                                eprintln!(
+                                    "{{\"level\":\"info\",\"action\":\"silence_nudge\",\"window\":\"{window_key}\"}}"
+                                );
+                            }
+                            Ok(false) => {} // disabled or already nudged
+                            Err(e) => {
+                                eprintln!(
+                                    "{{\"level\":\"error\",\"action\":\"silence_nudge\",\"err\":\"{e}\"}}"
+                                );
+                            }
+                        }
+                    }
+                    _ => break,
                 }
             }
         }
@@ -114,6 +144,11 @@ async fn subscribe_loop(
         .await
         .context("subscribe wm.family")?;
 
+    client
+        .subscribe("wm.presence")
+        .await
+        .context("subscribe wm.presence")?;
+
     loop {
         let Some(event) = client.next_event().await? else {
             break;
@@ -131,9 +166,20 @@ async fn subscribe_loop(
             let _ = distress_tx.send(EventKind::Distress { body }).await;
         } else if topic == "wm.family.message" {
             let _ = normal_tx.send(EventKind::Message { body }).await;
+        } else if topic == "wm.presence.silence" {
+            // Extract the window key from the event data; fall back to body text.
+            let window_key = event
+                .data
+                .get("window")
+                .and_then(|v| v.as_str())
+                .map_or_else(|| body.clone(), str::to_string);
+            let _ = normal_tx
+                .send(EventKind::PresenceSilence { window_key })
+                .await;
         }
         // wm.family.ack and wm.family.reply are filtered by self-emitted check
         // or ignored (we don't act on acks we receive from others).
+        // wm.presence.summon is consumed by the digest path (not this daemon).
     }
 
     Ok(())

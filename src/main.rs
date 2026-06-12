@@ -35,6 +35,10 @@ pub struct Cli {
     #[arg(long, env = "AGORABUS_SOCK")]
     pub bus_sock: Option<std::path::PathBuf>,
 
+    /// Path to state directory for debounce and tally persistence.
+    #[arg(long, env = "WM_REACH_STATE_DIR", default_value = "/var/lib/wintermute/reach")]
+    pub state_dir: std::path::PathBuf,
+
     /// Subcommand to run.
     #[command(subcommand)]
     pub command: Command,
@@ -73,7 +77,7 @@ async fn main() -> Result<()> {
 
     match cli.command {
         Command::Daemon => {
-            daemon::run(&sock, &cfg).await?;
+            daemon::run(&sock, &cfg, &cli.state_dir).await?;
         }
         Command::Send { to, body } => {
             dispatch::send_one(&sock, &cfg, &to, &body).await?;
