@@ -14,6 +14,7 @@ use clap::{Parser, Subcommand};
 
 mod config;
 mod daemon;
+mod deaf_escalation;
 mod digest;
 mod dispatch;
 mod distress_delivery;

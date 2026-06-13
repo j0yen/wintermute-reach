@@ -89,13 +89,20 @@ impl Transport for EmailTransport {
         };
 
         if let Some(ref mut stdin) = child.stdin.take() {
-            if let Err(e) = stdin.write_all(message.as_bytes()) {
-                return Ok(DeliveryResult {
-                    delivered: false,
-                    transport: "email".to_string(),
-                    reference: None,
-                    error: Some(format!("sendmail write failed: {e}")),
-                });
+            match stdin.write_all(message.as_bytes()) {
+                Ok(()) => {}
+                Err(e) if e.kind() == std::io::ErrorKind::BrokenPipe => {
+                    // sendmail exited before reading all input — normal for stubs
+                    // like `/bin/true`; let wait_with_output() determine success.
+                }
+                Err(e) => {
+                    return Ok(DeliveryResult {
+                        delivered: false,
+                        transport: "email".to_string(),
+                        reference: None,
+                        error: Some(format!("sendmail write failed: {e}")),
+                    });
+                }
             }
         }
 
