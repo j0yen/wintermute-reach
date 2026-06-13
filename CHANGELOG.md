@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.6.0 — 2026-06-13
+
+pulse-deaf-escalation: add deaf-device escalation reusing distress ladder; debounced, best-effort recovery note
+
 ## v0.2.0 — 2026-06-03
 
 Per-interaction notifications would make jsy's phone buzz all day and teach
