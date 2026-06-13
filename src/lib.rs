@@ -4,6 +4,7 @@
 
 pub mod config;
 pub mod daemon;
+pub mod deaf_escalation;
 pub mod digest;
 pub mod dispatch;
 pub mod distress_delivery;
@@ -14,3 +15,4 @@ pub mod transport;
 pub use config::{
     Config, DigestConfig, DistressPolicy, InboundConfig, InboundTransportKind, SilenceNudgeConfig,
 };
+pub use deaf_escalation::DeafEscalationConfig;

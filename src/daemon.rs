@@ -1,4 +1,5 @@
-//! Daemon mode: subscribe to `wm.family.*` and `wm.presence.*`, dispatch deliveries.
+//! Daemon mode: subscribe to `wm.family.*`, `wm.presence.*`, and
+//! `wm.health.hearing.*`, dispatch deliveries.
 //!
 //! ## Subscription strategy
 //!
@@ -8,6 +9,8 @@
 //!   and delivered synchronously before any pending normal messages.
 //! - `wm.presence` (prefix match) — catches `wm.presence.silence` to trigger the
 //!   silence nudge (when `SilenceNudgeConfig::enabled = true`).
+//! - `wm.health.hearing` (prefix match) — catches `wm.health.hearing.fail` and
+//!   `wm.health.hearing.ok` to trigger deaf-device escalation.
 //!
 //! ## Self-emitted-topic filter
 //!
@@ -29,6 +32,7 @@ use std::path::Path;
 use tokio::sync::mpsc;
 
 use crate::config::Config;
+use crate::deaf_escalation;
 use crate::dispatch;
 use crate::silence_nudge;
 
@@ -39,13 +43,17 @@ enum EventKind {
     Message { body: String },
     /// A `wm.presence.silence` event — carry the window key for debounce.
     PresenceSilence { window_key: String },
+    /// A `wm.health.hearing.fail` event.
+    HearingFail { data: serde_json::Value },
+    /// A `wm.health.hearing.ok` event.
+    HearingOk,
 }
 
 /// Run the daemon subscribe loop.
 ///
-/// Subscribes to `wm.family` and `wm.presence`, dispatches distress ahead of
-/// normal messages, fires the silence nudge on `wm.presence.silence`, and
-/// publishes `wm.family.ack` after each family delivery.
+/// Subscribes to `wm.family`, `wm.presence`, and `wm.health.hearing`, dispatches
+/// distress ahead of normal messages, fires the silence nudge on
+/// `wm.presence.silence`, and runs deaf-device escalation on `wm.health.hearing.*`.
 ///
 /// # Errors
 ///
@@ -73,7 +81,9 @@ pub async fn run(sock: &Path, cfg: &Config, state_dir: &Path) -> Result<()> {
         .await
     });
 
-    // Dispatch loop: drain distress first, then normal/presence.
+    let clock = deaf_escalation::WallClock;
+
+    // Dispatch loop: drain distress first, then normal/presence/health.
     loop {
         tokio::select! {
             biased; // distress checked first
@@ -106,6 +116,55 @@ pub async fn run(sock: &Path, cfg: &Config, state_dir: &Path) -> Result<()> {
                             Err(e) => {
                                 eprintln!(
                                     "{{\"level\":\"error\",\"action\":\"silence_nudge\",\"err\":\"{e}\"}}"
+                                );
+                            }
+                        }
+                    }
+                    Some(EventKind::HearingFail { data }) => {
+                        let envelope: deaf_escalation::HearingEventEnvelope =
+                            serde_json::from_value(data).unwrap_or_else(|_| {
+                                deaf_escalation::HearingEventEnvelope {
+                                    msg_type: "wm.health.hearing.fail".to_string(),
+                                    fail_ts: None,
+                                    last_ok_age_s: None,
+                                }
+                            });
+                        match deaf_escalation::on_hearing_fail(
+                            cfg,
+                            &cfg.deaf_escalation,
+                            &cfg.distress_policy,
+                            state_dir,
+                            &envelope,
+                            &clock,
+                        ) {
+                            Ok(true) => {
+                                eprintln!(
+                                    "{{\"level\":\"info\",\"action\":\"deaf_alert\",\"sent\":true}}"
+                                );
+                            }
+                            Ok(false) => {} // suppressed or disabled
+                            Err(e) => {
+                                eprintln!(
+                                    "{{\"level\":\"error\",\"action\":\"deaf_alert\",\"err\":\"{e}\"}}"
+                                );
+                            }
+                        }
+                    }
+                    Some(EventKind::HearingOk) => {
+                        match deaf_escalation::on_hearing_ok(
+                            cfg,
+                            &cfg.deaf_escalation,
+                            state_dir,
+                        ) {
+                            Ok(true) => {
+                                eprintln!(
+                                    "{{\"level\":\"info\",\"action\":\"deaf_recovery\",\"sent\":true}}"
+                                );
+                            }
+                            Ok(false) => {} // no prior alert, nothing to do
+                            Err(e) => {
+                                eprintln!(
+                                    "{{\"level\":\"error\",\"action\":\"deaf_recovery\",\"err\":\"{e}\"}}"
                                 );
                             }
                         }
@@ -149,6 +208,11 @@ async fn subscribe_loop(
         .await
         .context("subscribe wm.presence")?;
 
+    client
+        .subscribe("wm.health.hearing")
+        .await
+        .context("subscribe wm.health.hearing")?;
+
     loop {
         let Some(event) = client.next_event().await? else {
             break;
@@ -176,6 +240,12 @@ async fn subscribe_loop(
             let _ = normal_tx
                 .send(EventKind::PresenceSilence { window_key })
                 .await;
+        } else if topic == "wm.health.hearing.fail" {
+            let _ = normal_tx
+                .send(EventKind::HearingFail { data: event.data })
+                .await;
+        } else if topic == "wm.health.hearing.ok" {
+            let _ = normal_tx.send(EventKind::HearingOk).await;
         }
         // wm.family.ack and wm.family.reply are filtered by self-emitted check
         // or ignored (we don't act on acks we receive from others).

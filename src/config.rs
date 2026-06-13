@@ -164,6 +164,9 @@ pub struct Config {
     /// Distress delivery policy (retry + fallback ladder).
     #[serde(default)]
     pub distress_policy: DistressPolicy,
+    /// Deaf-device escalation settings (default ON — a safety signal).
+    #[serde(default)]
+    pub deaf_escalation: crate::deaf_escalation::DeafEscalationConfig,
 }
 
 fn default_from() -> String {
@@ -234,6 +237,7 @@ impl Default for Config {
             silence_nudge: SilenceNudgeConfig::default(),
             inbound: InboundConfig::default(),
             distress_policy: DistressPolicy::default(),
+            deaf_escalation: crate::deaf_escalation::DeafEscalationConfig::default(),
         }
     }
 }
@@ -279,6 +283,7 @@ impl Config {
             silence_nudge: SilenceNudgeConfig::default(),
             inbound: InboundConfig::default(),
             distress_policy: DistressPolicy::default(),
+            deaf_escalation: crate::deaf_escalation::DeafEscalationConfig::default(),
         })
     }
 
